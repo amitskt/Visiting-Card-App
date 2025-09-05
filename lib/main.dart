@@ -5,7 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'success_page.dart';   // ✅ import new page
+import 'success_page.dart';   // ✅
 
 void main() {
   runApp(const VisitingCardApp());
@@ -37,6 +37,8 @@ class VisitingCardHome extends HookWidget {
     final phoneController = useTextEditingController();
     final isLoading = useState(false);
 
+    // ✅ NEW: Checkbox state
+    final isVerifiedChecked = useState(false);
     // ✅ Convert HEIC/HEIF/TIFF/RAW → JPG
     Future<File> convertToJpg(File file) async {
       try {
@@ -301,12 +303,37 @@ class VisitingCardHome extends HookWidget {
                     ),
                   ],
                 ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isVerifiedChecked.value,
+                      activeColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      onChanged: (val) {
+                        isVerifiedChecked.value = val ?? false;
+                      },
+                    ),
+                    const SizedBox(width: 3),
+                    const Text(
+                      "Have you verified Name and Email?",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
-                  onPressed: verifyAndSubmit,
-                  label: const Text("Verify & Submit"),
+                  onPressed: isVerifiedChecked.value
+                      ? verifyAndSubmit
+                      : null, // ✅ Disabled until checked
+                  label: const Text("Submit"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
+                    disabledBackgroundColor: Colors.grey, // ✅ Disabled look
                   ),
                 ),
               ],
